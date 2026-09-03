@@ -1,0 +1,607 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cycle">
+<meta name="theme-color" content="#171219">
+<title>Cycle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Karla:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#171219; --s1:#211A24; --s2:#2B2230; --line:#3B2F41;
+  --ink:#F4EBF0; --ink2:#B6A5B4; --ink3:#7D6C7F; --ink4:#564859;
+  --blush:#F3AFC6;
+  --menstrual:#E0577B; --follicular:#7FB58C; --ovulatory:#EFA46A; --luteal:#B681CE;
+  --phase:var(--luteal);
+  --d:"Fraunces",Georgia,serif; --b:"Karla",system-ui,sans-serif; --m:"DM Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg)}
+body{font-family:var(--b);color:var(--ink);-webkit-font-smoothing:antialiased;overscroll-behavior-y:contain}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:16px}
+#root{max-width:480px;margin:0 auto;padding:18px 16px 100px;min-height:100vh}
+
+.mast{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+.mast h1{font-family:var(--d);font-weight:400;font-size:19px;margin:0;letter-spacing:-.01em}
+.mast .dt{font-family:var(--m);font-size:11px;color:var(--ink3);letter-spacing:.06em}
+
+.dial{position:relative;display:grid;place-items:center;margin:0 auto;width:100%;max-width:310px}
+.dial svg{width:100%;display:block}
+.glow{position:absolute;width:54%;height:54%;border-radius:50%;background:var(--phase);opacity:.14;filter:blur(28px)}
+.ctr{position:absolute;text-align:center;pointer-events:none;margin-top:6px}
+.ctr .n{font-family:var(--d);font-size:58px;font-weight:300;line-height:.92;letter-spacing:-.03em}
+.ctr .n.sm{font-size:32px}
+.ctr .c{font-family:var(--m);font-size:10px;letter-spacing:.18em;color:var(--blush);margin-top:8px}
+
+.ph .sub{font-size:13.5px;color:var(--ink2);line-height:1.55;text-align:center;margin-top:4px}
+.ph .sub b{color:var(--ink);font-weight:500}
+
+.eb{font-family:var(--m);font-size:10px;letter-spacing:.2em;color:var(--blush);margin:30px 0 11px;display:flex;align-items:center;gap:10px;opacity:.85}
+.eb::after{content:"";flex:1;height:1px;background:var(--line)}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+.card+.card{margin-top:8px}
+.tx{font-size:14px;line-height:1.62;color:var(--ink2)}
+.hint{font-size:12px;color:var(--ink3);line-height:1.55;margin-top:10px}
+
+.tp{background:color-mix(in srgb,var(--phase) 13%,var(--bg));border:1px solid color-mix(in srgb,var(--phase) 38%,transparent);border-radius:16px;padding:17px 18px}
+.tp .lead{font-size:15px;line-height:1.62;color:var(--ink)}
+.tp .nx{margin-top:13px;padding-top:13px;border-top:1px solid color-mix(in srgb,var(--phase) 26%,transparent);font-size:13.5px;line-height:1.58;color:var(--ink2)}
+.tp .nx b{color:var(--phase);font-weight:500}
+.cg{background:var(--s1);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.cr{display:flex;gap:14px;padding:15px 16px}
+.cr+.cr{border-top:1px solid var(--line)}
+.cr .k{font-family:var(--m);font-size:10px;letter-spacing:.14em;color:var(--phase);width:40px;flex:none;padding-top:3px}
+.cr .v{font-size:14px;line-height:1.6;color:var(--ink2);flex:1}
+.ah{border:1px dashed color-mix(in srgb,var(--phase) 48%,transparent);border-radius:16px;padding:16px 18px}
+.ah .k{font-family:var(--d);font-size:17px;color:var(--ink);margin-bottom:8px}
+.ah .v{font-size:14px;line-height:1.62;color:var(--ink2)}
+
+.row{display:flex;gap:8px}
+.btn{flex:1;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:14px 10px;font-size:14px;font-weight:500;color:var(--ink);transition:.15s}
+.btn:active{transform:scale(.985)}
+.btn.solid{background:var(--phase);border-color:var(--phase);color:#171219}
+.btn.gh{background:none;font-size:13px;padding:11px;color:var(--ink2)}
+
+.calhd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.calhd .mo{font-family:var(--d);font-size:20px}
+.calhd button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);font-size:16px;color:var(--ink2)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.dow{text-align:center;font-family:var(--m);font-size:10px;color:var(--ink4);padding-bottom:3px}
+.cell{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--m);font-size:12px;position:relative;border:1px solid transparent;color:var(--ink3)}
+.cell .fd{width:4px;height:4px;border-radius:50%;position:absolute;bottom:5px;left:50%;transform:translateX(-50%)}
+.cell .lg{width:3px;height:3px;border-radius:50%;background:var(--blush);position:absolute;top:5px;right:5px}
+.cell.today{outline:2px solid var(--blush);outline-offset:-1px}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--s1);border-radius:14px;padding:14px 8px;text-align:center}
+.stat .v{font-family:var(--d);font-size:27px;font-weight:400;line-height:1}
+.stat .v i{font-style:normal;font-family:var(--m);font-size:11px;color:var(--ink3)}
+.stat .k{font-family:var(--m);font-size:9px;letter-spacing:.1em;color:var(--ink3);margin-top:8px}
+.strip{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.strip .sl{font-family:var(--m);font-size:10.5px;color:var(--ink3);width:30px;flex:none}
+.strip .tr{display:flex;gap:2px;height:18px}
+.strip .sn{font-family:var(--m);font-size:10.5px;color:var(--ink2);width:22px;text-align:right;flex:none}
+.heat{display:grid;gap:4px;align-items:center}
+.hc{aspect-ratio:1;border-radius:5px}
+.pmrow{display:flex;align-items:flex-end;gap:4px;height:74px}
+.pmcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.pmbars{display:flex;align-items:flex-end;gap:3px;height:62px}
+.pmbars i{width:11px;border-radius:3px 3px 1px 1px;display:block}
+.pmlab{font-family:var(--m);font-size:9px;color:var(--ink4)}
+
+.sheet{position:fixed;inset:0;z-index:50;display:none}
+.sheet.on{display:block}
+.sheet .bd{position:absolute;inset:0;background:rgba(10,7,12,.74)}
+.sheet .pn{position:absolute;left:0;right:0;bottom:0;max-height:92vh;overflow-y:auto;background:var(--bg);border-top:1px solid var(--line);border-radius:20px 20px 0 0;padding:8px 18px 36px;max-width:480px;margin:0 auto}
+.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:6px auto 14px}
+.fl{font-family:var(--m);font-size:10px;letter-spacing:.16em;color:var(--blush);margin:20px 0 8px;opacity:.85}
+.opts{display:flex;gap:6px}
+.opts button{flex:1;background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:12px 2px;font-size:12px;color:var(--ink2)}
+.opts button[aria-pressed="true"]{background:var(--phase);border-color:var(--phase);color:#171219;font-weight:500}
+.sc{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.sc .lb{font-size:12.5px;color:var(--ink2);flex:1;min-width:0}
+.sc .bts{display:flex;gap:4px;flex:none}
+.sc .bts button{width:27px;height:29px;background:var(--s2);border:1px solid var(--line);border-radius:7px;font-family:var(--m);font-size:11px;color:var(--ink3)}
+.sc .bts button[aria-pressed="true"]{background:var(--phase);border-color:var(--phase);color:#171219;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:8px 13px;font-size:12.5px;color:var(--ink2)}
+.chip[aria-pressed="true"]{background:var(--phase);border-color:var(--phase);color:#171219;font-weight:500}
+textarea{width:100%;background:var(--s2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px;min-height:56px;resize:vertical}
+pre.rep{white-space:pre-wrap;font-family:var(--m);font-size:11.5px;line-height:1.65;color:var(--ink2);background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:14px;max-height:44vh;overflow:auto}
+
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(23,18,25,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;max-width:480px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{flex:1;padding:12px 0 14px;font-size:10.5px;font-family:var(--m);letter-spacing:.06em;color:var(--ink4);display:flex;flex-direction:column;align-items:center;gap:6px}
+.nav button .ic{width:19px;height:19px}
+.nav button[aria-current="true"]{color:var(--phase)}
+.fab{position:fixed;right:calc(50% - 240px + 18px);bottom:90px;width:56px;height:56px;border-radius:50%;background:var(--phase);color:#171219;font-size:26px;display:grid;place-items:center;z-index:20;box-shadow:0 6px 20px rgba(0,0,0,.45)}
+@media(max-width:520px){.fab{right:18px}}
+
+.hrow{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font-size:13.5px;gap:10px}
+.hrow:last-child{border-bottom:0}
+.hrow .d{font-family:var(--m);font-size:12.5px;color:var(--ink2)}
+.hrow .g{color:var(--ink3);font-size:11.5px;margin-top:3px}
+.hrow .acts{display:flex;gap:4px;flex:none}
+.hrow .acts button{padding:6px 9px;font-size:11px;border-radius:8px;border:1px solid var(--line);color:var(--ink3)}
+.hrow .acts button.on{border-color:var(--blush);color:var(--blush)}
+
+.onb{padding:40px 4px}
+.onb h2{font-family:var(--d);font-weight:400;font-size:32px;line-height:1.18;margin:0 0 14px}
+.onb h2 em{font-style:normal;color:var(--blush)}
+.onb p{color:var(--ink2);font-size:14.5px;line-height:1.6;margin:0 0 24px}
+input[type=date],select{width:100%;background:var(--s2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:12px;font-family:var(--m);font-size:14px;color-scheme:dark}
+.toast{position:fixed;left:50%;bottom:106px;transform:translate(-50%,14px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:.22s;z-index:80}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div id="root"></div>
+<div class="toast" id="toast"></div>
+<div class="sheet" id="sheet"><div class="bd" onclick="closeSheet()"></div><div class="pn" id="pn"></div></div>
+
+<script>
+const KEY='cycleapp:v3';
+let S={periods:[],logs:{},settings:{cycle:30,period:6,luteal:13,win:6,onboarded:false,seeded:false}};
+let tab='today', calMonth=null, sheetDate=null, mem=false;
+
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parse=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const dayDiff=(a,b)=>Math.round((parse(b)-parse(a))/864e5);
+const shift=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return iso(d)};
+const pretty=s=>parse(s).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+const TODAY=iso(new Date());
+const median=a=>{const s=[...a].sort((x,y)=>x-y),m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2};
+const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
+const uid=()=>Math.random().toString(36).slice(2,10);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function load(){
+  try{const r=await window.storage.get(KEY);if(r&&r.value){S=Object.assign(S,JSON.parse(r.value));return}}catch(e){}
+  try{const v=localStorage.getItem(KEY);if(v)S=Object.assign(S,JSON.parse(v))}catch(e){mem=true}
+}
+async function save(){
+  let ok=false;
+  try{await window.storage.set(KEY,JSON.stringify(S));ok=true}catch(e){}
+  try{localStorage.setItem(KEY,JSON.stringify(S));ok=true}catch(e){}
+  mem=!ok;
+}
+
+const SYM=['cramps','headache','bloating','tender breasts','acne','back pain','nausea','joint pain','fatigue','poor sleep','sleeping too much','brain fog','appetite up','overwhelmed'];
+const FLOW=['spotting','light','medium','heavy'];
+const CORE=[['lab','Mood swings, more sensitive'],['ang','Irritable or angry'],['dep','Sad, hopeless, self-critical'],['anx','Anxious, tense, on edge'],['imp','Got in the way of life']];
+
+const CARE={
+menstrual:{name:'Menstrual phase',col:'var(--menstrual)',
+ today:'Estrogen and progesterone are at their lowest point of the month. Cramping usually peaks in the first day or two and eases from there. For most people with a premenstrual mood pattern, this is when it lifts — often within a few days of bleeding starting.',
+ cards:[['EAT','Menstrual blood loss draws on iron stores, so this is the week iron matters most: red meat, eggs, lentils, dark greens. Plant sources absorb considerably better alongside something acidic like citrus or peppers. If your periods are heavy, it is worth having ferritin checked at some point.'],
+        ['MOVE','Movement reduces cramp pain for a lot of people, and there is no evidence you need to train lighter on principle. Go by how you feel rather than by the calendar — if a hard session sounds miserable, walking counts.'],
+        ['MIND','Concentration often improves as the mood lifts. A reasonable week for reviewing, tidying and deciding what to drop, and a good moment to look back at what the last two weeks actually felt like.']],
+ ahead:['Comfort, and what comes next','Heat on the lower abdomen helps, and painkillers work considerably better taken at the first twinge than several hours in. Energy usually climbs steadily once the bleeding tails off, so leave the next week loosely planned rather than packed — you will probably want the room.']},
+
+follicular:{name:'Follicular phase',col:'var(--follicular)',
+ today:'Estrogen is climbing towards its peak. For most people this is the steadiest stretch of the month — mood, energy and sleep tend to settle here, and premenstrual symptoms should be fully absent. If they are not, that is worth noting in your log.',
+ cards:[['EAT','Nothing special is required here. Keep rebuilding iron stores after bleeding, and eat regularly — long gaps between meals make the back half of the cycle harder than it needs to be.'],
+        ['MOVE','A good stretch to build a habit or add load, mostly because you are likely to feel like it. The evidence that this phase produces better training adaptations is weak, so treat the motivation as the advantage rather than the physiology.'],
+        ['MIND','This is when unfamiliar or demanding work tends to feel least daunting. Front-load the things you have been avoiding starting, and use the clear-headedness to make decisions your premenstrual self will have to live with.']],
+ ahead:['Be careful what you agree to','Feeling good makes it easy to fill a calendar that a harder version of you will have to get through. Where you have a choice, put the demanding and social things in the next week or so and keep the days before your next period deliberately thin. This is the single most useful thing you can do with a good week.']},
+
+ovulatory:{name:'Ovulatory phase',col:'var(--ovulatory)',
+ today:'Estrogen peaks and then falls sharply, with an LH surge alongside it. Ovulation is less predictable than the textbook suggests — even in 28-day cycles it spreads across about ten possible days — so treat this window as approximate.',
+ cards:[['EAT','No specific requirements. Hydration needs run a little higher than they feel, which is worth remembering if you are training hard this week.'],
+        ['MOVE','Ligament laxity increases around ovulation and some studies find higher knee injury rates, so warm up properly and keep technique honest in heavy or explosive work. Performance itself does not reliably peak here, whatever cycle-syncing content claims.'],
+        ['MIND','Nothing physiological guarantees a good week, but if you are having one, spend it. Difficult conversations and demanding commitments are easier now than they will be in ten days.']],
+ ahead:['The turn is coming','Progesterone takes over from here, and for you that matters more than most people — the premenstrual stretch begins after this. Finish or hand off anything demanding in the next few days. Note that this is also the fertile window, though the dates are an estimate from your own history and are not reliable for avoiding or achieving pregnancy.']},
+
+luteal:{name:'Luteal phase',col:'var(--luteal)',
+ today:'Progesterone rises and then drops away in the final days. Core temperature sits slightly higher, sleep gets lighter and appetite increases. This is the stretch where premenstrual mood symptoms live, and in PMDD they are understood to come from a heightened sensitivity to ordinary hormone shifts rather than from abnormal hormone levels — the hormones are normal, the response to them is not.',
+ cards:[['EAT','Your body is running warmer and genuinely needs a little more fuel; restricting here reliably converts into cravings later. Calcium has the most consistent trial evidence of any supplement for premenstrual symptoms, at roughly 1000 to 1200 mg a day from food or supplements. Magnesium and vitamin B6 have weaker but broadly positive evidence. Worth raising with a doctor rather than starting blind.'],
+        ['MOVE','Heat tolerance drops and hot rooms feel harder, so adjust for that. Beyond it, the evidence does not support systematically training lighter in this phase — regular exercise is one of the standard first-line recommendations for premenstrual symptoms, so keep it going at whatever intensity you can sustain.'],
+        ['MIND','Log every day this week, even the bad ones — especially the bad ones. What you feel is real and not an overreaction. What the daily record can tell you, and memory cannot, is whether it lifts when your period starts. That distinction is the whole diagnosis.']],
+ ahead:['Getting ready for day one','Restock supplies now rather than at 6am on the day, and put painkillers back in your bag. Where you still have a choice, move anything demanding out of the next week and keep the first two days of your period light — that decision is far easier to make today than it will be in five days. If these weeks are severe, they are treatable; the record you are building here is what a clinician needs to see.']}};
+
+/* ---------------- analysis ---------------- */
+function A(){
+  const P=[...S.periods].sort((a,b)=>a.start<b.start?-1:1);
+  const starts=P.map(p=>p.start).filter(s=>s<=TODAY);
+  const gaps=[],allGaps=[];
+  for(let i=1;i<P.length;i++){
+    if(P[i].start>TODAY)continue;
+    const g=dayDiff(P[i-1].start,P[i].start);
+    if(g<15||g>60)continue;
+    allGaps.push({g,label:parse(P[i-1].start).toLocaleDateString(undefined,{month:'short'}),
+      ex:!!(P[i].exclude||P[i-1].exclude),len:P[i-1].end?dayDiff(P[i-1].start,P[i-1].end)+1:null});
+    if(!P[i].exclude&&!P[i-1].exclude)gaps.push(g);
+  }
+  const recent=gaps.slice(-S.settings.win);
+  const lens=P.filter(p=>p.end&&!p.exclude).map(p=>dayDiff(p.start,p.end)+1).filter(n=>n>=1&&n<=14);
+  const o={P,starts,gaps,allGaps,lens,
+    cycle:recent.length>=2?Math.round(median(recent)):S.settings.cycle,
+    period:lens.length?Math.round(median(lens)):S.settings.period,
+    last:starts.length?starts[starts.length-1]:null};
+  o.ovDay=Math.max(9,o.cycle-S.settings.luteal);
+  o.bounds=(()=>{const p=Math.min(o.period,o.ovDay-3);return{
+    menstrual:[1,p],follicular:[p+1,o.ovDay-2],ovulatory:[o.ovDay-1,o.ovDay+1],luteal:[o.ovDay+2,o.cycle]}})();
+  if(!o.last)return o;
+  o.day=dayDiff(o.last,TODAY)+1;
+  o.next=shift(o.last,o.cycle);
+  o.until=dayDiff(TODAY,o.next);
+  o.late=o.day>o.cycle+1;
+  o.phase=phaseOf(Math.min(o.day,o.cycle),o.bounds);
+  const cur=P.find(p=>p.start===o.last);
+  o.open=!!(cur&&!cur.end&&o.day<=12);
+  o.spread=gaps.length?Math.max(...gaps)-Math.min(...gaps):0;
+  o.conf=gaps.length>=6?'high':gaps.length>=3?'building':gaps.length>=2?'low':'none';
+  return o;
+}
+function phaseOf(d,b){return d<=b.menstrual[1]?'menstrual':d<=b.follicular[1]?'follicular':d<=b.ovulatory[1]?'ovulatory':'luteal'}
+function phaseOn(date,a){
+  if(!a.starts.length)return null;
+  const st=[...a.starts].reverse().find(s=>s<=date);
+  if(!st)return null;
+  const d=dayDiff(st,date)+1;
+  if(d>a.cycle+12)return null;
+  return{day:d,phase:phaseOf(Math.min(d,a.cycle),a.bounds),start:st};
+}
+function fphase(date,a){
+  if(date<=TODAY)return phaseOn(date,a);
+  if(!a.last)return null;
+  let st=a.last,guard=0;
+  while(dayDiff(st,date)+1>a.cycle&&guard++<400)st=shift(st,a.cycle);
+  const d=dayDiff(st,date)+1;
+  return d<1?null:{day:d,phase:phaseOf(d,a.bounds),proj:true};
+}
+function coreScore(l){
+  if(!l||!l.core)return null;
+  const v=CORE.slice(0,4).map(([k])=>l.core[k]).filter(x=>x!=null);
+  return v.length?mean(v):null;
+}
+/* premenstrual vs post-menstrual comparison, per cycle */
+function pmPattern(a){
+  const out=[];
+  for(let i=0;i<a.starts.length;i++){
+    const st=a.starts[i], nxt=a.starts[i+1];
+    const endRef=nxt||a.next; if(!endRef)continue;
+    const pre=[],post=[];
+    for(let k=5;k>=1;k--){const d=shift(endRef,-k);const s=coreScore(S.logs[d]);if(s!=null&&d<=TODAY)pre.push(s)}
+    for(let k=4;k<=10;k++){const d=shift(st,k-1);const s=coreScore(S.logs[d]);if(s!=null&&d<=TODAY)post.push(s)}
+    if(pre.length>=3&&post.length>=3){
+      const P=mean(pre),Q=mean(post);
+      out.push({label:parse(st).toLocaleDateString(undefined,{month:'short'}),pre:P,post:Q,
+        pct:Q>0?Math.round((P-Q)/Q*100):null,meets:Q>0&&(P-Q)/Q>=0.3});
+    }
+  }
+  return out;
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  const a=A(),root=document.getElementById('root');
+  if(!S.settings.onboarded){root.innerHTML=onb();return}
+  if(a.phase)document.documentElement.style.setProperty('--phase',CARE[a.phase].col);
+  root.innerHTML=(tab==='today'?today(a):tab==='calendar'?cal(a):tab==='insights'?ins(a):data(a))+nav();
+  if(tab==='today')drawDial(a);
+}
+function nav(){
+  const t=[['today','Today','M12 3v18M3 12h18'],['calendar','Calendar','M4 6h16v14H4zM4 10h16M8 3v4M16 3v4'],
+           ['insights','Patterns','M4 19V9M10 19V5M16 19v-7M22 19h-20'],
+           ['data','Data','M4 7c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 7v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7']];
+  return `<div class="nav">${t.map(([k,l,p])=>`<button aria-current="${tab===k}" onclick="go('${k}')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="${p}"/></svg>${l}</button>`).join('')}</div>`
+   +(tab!=='data'?`<button class="fab" onclick="openSheet('${TODAY}')" aria-label="Log today">+</button>`:'');
+}
+function go(t){tab=t;window.scrollTo(0,0);render()}
+
+function today(a){
+  const c=CARE[a.phase];
+  return `<div class="mast"><h1>${c.name}</h1><div class="dt">${parse(TODAY).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'}).toUpperCase()}</div></div>
+  <div class="dial"><div class="glow"></div><div id="dialsvg" style="width:100%"></div>
+    <div class="ctr">${a.late?`<div class="n sm">Day ${a.day}</div><div class="c">${a.day-a.cycle} PAST DUE</div>`:`<div class="n">${a.day}</div><div class="c">DAY ${a.day} OF ${a.cycle}</div>`}</div></div>
+  <div class="ph"><div class="sub">${status(a)}</div></div>
+  <div class="eb">WHERE YOU ARE TODAY</div>
+  <div class="tp"><div class="lead">${esc(c.today)}</div>${headsUp(a)}</div>
+  <div class="eb">CARE TODAY</div>
+  <div class="cg">${c.cards.map(([k,t])=>`<div class="cr"><div class="k">${k}</div><div class="v">${esc(t)}</div></div>`).join('')}</div>
+  <div class="eb">LOOKING AHEAD</div>
+  <div class="ah"><div class="k">${esc(c.ahead[0])}</div><div class="v">${esc(c.ahead[1])}</div></div>
+  <div class="eb">LOG</div>
+  <div class="row"><button class="btn solid" onclick="${a.open?`endP('${TODAY}')`:`startP('${TODAY}')`}">${a.open?'Period ended today':'Period started today'}</button></div>
+  <div class="row" style="margin-top:8px"><button class="btn" onclick="openSheet('${TODAY}')">${S.logs[TODAY]?'Edit today':'How today felt'}</button></div>`;
+}
+function status(a){
+  if(a.late)return `Expected around <b>${pretty(a.next)}</b>. Log it when it starts.`;
+  const pm={high:'',
+            building:` Based on ${a.gaps.length} cycles, give or take ${Math.max(1,Math.round(a.spread/2))} days.`,
+            low:` Only ${a.gaps.length} cycles logged, so treat this loosely.`,
+            none:' Based on your stated typical length until a second period is logged.'}[a.conf];
+  return a.until===0?`Period expected <b>today</b>.`
+    :`Next period around <b>${pretty(a.next)}</b>, about <b>${a.until} day${a.until===1?'':'s'}</b> away.${pm}`;
+}
+function headsUp(a){
+  const b=a.bounds,d=a.day;let m='';
+  const inPh=k=>`day ${d-b[k][0]+1} of ${b[k][1]-b[k][0]+1}`;
+  if(a.open)m='<b>Still bleeding?</b> Tap Period ended below when it stops, so your averages stay accurate.';
+  else if(a.late)m=`<b>Overdue.</b> Expected around ${pretty(a.next)}. Cycles shift for all sorts of reasons — log it as soon as it starts.`;
+  else if(d>=b.luteal[1]-4)m=`<b>The hard stretch.</b> Roughly ${a.until} day${a.until===1?'':'s'} to go, and this is where symptoms usually peak. Logging today matters more than logging any other day of the month.`;
+  else if(d>=b.luteal[0]&&d<=b.luteal[0]+2)m='<b>The luteal phase just started.</b> If a premenstrual pattern is going to show up, it starts building from around here.';
+  else if(d>=b.ovulatory[0]&&d<=b.ovulatory[1])m=`<b>Fertile window, ${inPh('ovulatory')}.</b> Approximate — ovulation timing varies by several days even in regular cycles.`;
+  else if(d===b.ovulatory[0]-1)m='<b>Estimated fertile window opens tomorrow.</b>';
+  else if(d===b.menstrual[1])m='<b>Last expected day of bleeding.</b> The steadiest fortnight of your month starts here.';
+  else if(d<=b.menstrual[1])m=`<b>${inPh('menstrual')} of bleeding.</b> Typically ${a.period} days for you.`;
+  else m=`<b>Follicular phase, ${inPh('follicular')}.</b> Symptoms should be absent through here. Estimated ovulation around day ${a.ovDay}.`;
+  return `<div class="nx">${m}</div>`;
+}
+
+function drawDial(a){
+  const el=document.getElementById('dialsvg');if(!el)return;
+  const R=80,C=2*Math.PI*R,L=a.cycle,b=a.bounds,cx=112,cy=112;
+  const ang=f=>(360*f-90)*Math.PI/180;
+  const pt=(f,r)=>[cx+r*Math.cos(ang(f)),cy+r*Math.sin(ang(f))];
+  const arc=(k,[s,e])=>{const f0=(s-1)/L,f1=Math.min(e,L)/L,len=Math.max(0,(f1-f0)*C-4);
+    return `<circle r="${R}" cx="${cx}" cy="${cy}" fill="none" stroke="var(--${k})" stroke-width="13"
+      stroke-dasharray="${len.toFixed(1)} ${(C-len).toFixed(1)}" stroke-dashoffset="${(-f0*C).toFixed(1)}"
+      transform="rotate(-90 ${cx} ${cy})" opacity="${a.phase===k?1:.26}"/>`};
+
+  const fNow=Math.min(a.day,L)/L, r2=R-13, C2=2*Math.PI*r2;
+  const prog=Math.max(0,fNow*C2-6);
+  const [mx,my]=pt(fNow,R);
+
+  const labels=['menstrual','follicular','ovulatory','luteal'].map(k=>{
+    const d0=b[k][0], f=(d0-1)/L, [lx,ly]=pt(f,R+19);
+    return `<text x="${lx.toFixed(1)}" y="${(ly+3.5).toFixed(1)}" text-anchor="middle" fill="var(--ink4)" font-size="9.5" font-family="var(--m)">${d0}</text>`}).join('');
+
+  el.innerHTML=`<svg viewBox="0 0 224 224" role="img" aria-label="Cycle day ${a.day} of ${a.cycle}, ${a.phase} phase. The ring runs clockwise from day 1 at the top.">
+    <circle r="${R}" cx="${cx}" cy="${cy}" fill="none" stroke="var(--s2)" stroke-width="13"/>
+    ${arc('menstrual',b.menstrual)}${arc('follicular',b.follicular)}${arc('ovulatory',b.ovulatory)}${arc('luteal',b.luteal)}
+    <line x1="${cx}" y1="${cy-R-9}" x2="${cx}" y2="${cy-R+9}" stroke="var(--blush)" stroke-width="1.6"/>
+    <text x="${cx}" y="${cy-R-15}" text-anchor="middle" fill="var(--blush)" font-size="9.5" font-family="var(--m)" letter-spacing="1.5">DAY 1</text>
+    ${labels}
+    <circle r="${r2}" cx="${cx}" cy="${cy}" fill="none" stroke="var(--blush)" stroke-width="2"
+      stroke-dasharray="${prog.toFixed(1)} ${(C2-prog).toFixed(1)}" transform="rotate(-90 ${cx} ${cy})" opacity=".55" stroke-linecap="round"/>
+    <circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="10" fill="var(--bg)"/>
+    <circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="6" fill="var(--phase)"/>
+  </svg>`;
+}
+
+/* ---------------- calendar ---------------- */
+function cal(a){
+  if(!calMonth){const d=new Date();calMonth={y:d.getFullYear(),m:d.getMonth()}}
+  const{y,m}=calMonth,first=new Date(y,m,1),n=new Date(y,m+1,0).getDate();
+  let cells='';
+  for(let i=0;i<first.getDay();i++)cells+='<div></div>';
+  for(let d=1;d<=n;d++){
+    const date=iso(new Date(y,m,d)),info=fphase(date,a),fut=date>TODAY;
+    const isPred=fut&&info&&info.phase==='menstrual';
+    let st='';
+    if(info){const c=`var(--${info.phase})`;
+      st=fut?`background:color-mix(in srgb, ${c} ${isPred?20:12}%, transparent);border:1px dashed color-mix(in srgb, ${c} ${isPred?75:58}%, transparent);color:${isPred?'var(--ink2)':'var(--ink3)'};`
+            :`background:color-mix(in srgb, ${c} 26%, transparent);border:1px solid color-mix(in srgb, ${c} 50%, transparent);color:var(--ink);`}
+    const lg=S.logs[date];
+    const bleed=S.periods.some(p=>date>=p.start&&date<=(p.end||p.start));
+    const fl=(lg&&lg.flow)?`<span class="fd" style="background:var(--menstrual);opacity:${.5+FLOW.indexOf(lg.flow)*.16}"></span>`
+      :(bleed?'<span class="fd" style="background:var(--menstrual);opacity:.9"></span>'
+      :(isPred?'<span class="fd" style="background:var(--menstrual);opacity:.4"></span>':''));
+    const dot=lg&&(lg.core||lg.symptoms&&lg.symptoms.length||lg.note||lg.mood||lg.energy)?'<span class="lg"></span>':'';
+    cells+=`<button class="cell${date===TODAY?' today':''}" style="${st}" onclick="openSheet('${date}')">${d}${fl}${dot}</button>`;
+  }
+  return `<div class="calhd"><button onclick="mv(-1)">‹</button><div class="mo">${first.toLocaleDateString(undefined,{month:'long',year:'numeric'})}</div><button onclick="mv(1)">›</button></div>
+  <div class="grid">${['S','M','T','W','T','F','S'].map(d=>`<div class="dow">${d}</div>`).join('')}${cells}</div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px">${[['menstrual','Menstrual'],['follicular','Follicular'],['ovulatory','Ovulatory'],['luteal','Luteal']].map(([k,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3)"><span style="width:9px;height:9px;border-radius:3px;background:var(--${k})"></span>${l}</span>`).join('')}</div>
+  `;
+}
+function mv(n){calMonth.m+=n;if(calMonth.m>11){calMonth.m=0;calMonth.y++}if(calMonth.m<0){calMonth.m=11;calMonth.y--}render()}
+
+/* ---------------- patterns ---------------- */
+function ins(a){
+  if(a.gaps.length<1)return `<div class="mast"><h1>Patterns</h1></div><div class="card"><div class="tx">Log a second period start and the numbers begin here.</div></div>`+navSpacer();
+  const verdict=a.gaps.length<3?'Too early':a.spread<=4?'Regular':a.spread<=8?'Fairly regular':'Variable';
+  const show=a.allGaps, mxLen=Math.max(34,...show.map(x=>x.g));
+  return `<div class="mast"><h1>Patterns</h1></div>
+  <div class="stats">
+   <div class="stat"><div class="v">${a.cycle}<i>d</i></div><div class="k">MEDIAN CYCLE</div></div>
+   <div class="stat"><div class="v">${a.lens.length?a.period:'—'}${a.lens.length?'<i>d</i>':''}</div><div class="k">MEDIAN BLEED</div></div>
+   <div class="stat"><div class="v" style="font-size:15px;padding-top:7px">${verdict}</div><div class="k">${a.spread?`RANGE ${Math.min(...a.gaps)}–${Math.max(...a.gaps)}D`:'REGULARITY'}</div></div></div>
+  ${pmBlock(a)}
+  <div class="eb">CYCLE LENGTHS</div>
+  <div class="card">${show.map(g=>{
+    const L=g.g,ov=Math.max(9,L-S.settings.luteal),bl=g.len||a.period;
+    const segs=[['menstrual',bl],['follicular',Math.max(1,ov-2-bl)],['ovulatory',3],['luteal',Math.max(1,L-(ov+1))]];
+    return `<div class="strip"><span class="sl">${g.label}</span><div class="tr" style="width:${Math.round(L/mxLen*100)}%;opacity:${g.ex?.35:1}">${segs.map(([k,w],i)=>`<div style="flex:${w};background:var(--${k});border-radius:${i===0?'5px 0 0 5px':i===3?'0 5px 5px 0':'0'};opacity:.85"></div>`).join('')}</div><span class="sn">${L}</span></div>`}).join('')}</div>
+  ${devBlock(a)}
+  ${heatmap(a)}`+navSpacer();
+}
+function navSpacer(){return ''}
+function pmBlock(a){
+  const rows=pmPattern(a);
+  if(!rows.length)return `<div class="eb">PREMENSTRUAL PATTERN</div>
+  <div class="card"><div class="tx">Please rate the five mood items each day — tap the + button, or any day in the calendar. Once there is enough, this compares the five days before your period against the week after it, which is the comparison that shows whether your mood follows your cycle.</div></div>`;
+  const meets=rows.filter(r=>r.meets).length;
+  const mx=Math.max(...rows.flatMap(r=>[r.pre,r.post]),3);
+  return `<div class="eb">PREMENSTRUAL PATTERN</div>
+  <div class="card">
+   <div class="pmrow">${rows.map(r=>`<div class="pmcol">
+     <div class="pmbars">
+       <i style="height:${Math.round(r.post/mx*58)}px;background:var(--follicular)"></i>
+       <i style="height:${Math.round(r.pre/mx*58)}px;background:var(--luteal)"></i></div>
+     <span class="pmlab">${r.label}</span></div>`).join('')}</div>
+   <div style="display:flex;gap:14px;margin-top:12px">
+     <span style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3)"><span style="width:9px;height:9px;border-radius:2px;background:var(--follicular)"></span>Week after period</span>
+     <span style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3)"><span style="width:9px;height:9px;border-radius:2px;background:var(--luteal)"></span>5 days before</span></div>
+   <div class="tx" style="margin-top:14px">In <b style="color:var(--ink)">${meets} of ${rows.length}</b> cycle${rows.length===1?'':'s'} with enough data, your mood scores in the five days before your period were at least 30% higher than in the week after it.</div>
+   <div class="hint">A confirmed diagnosis needs two consecutive symptomatic cycles of daily ratings reviewed by a clinician. This chart is the raw material for that conversation, not a substitute for it.</div>
+  </div>`;
+}
+function devBlock(a){
+  const out=[],g=a.gaps.slice(-6);
+  if(g.length>=3){
+    if(Math.max(...g)-Math.min(...g)>8)out.push('Your recent cycles vary by more than 8 days. Some variation is normal, but a persistently wide spread is worth mentioning.');
+    if(g.some(x=>x>35))out.push('At least one recent cycle ran longer than 35 days.');
+    if(g.some(x=>x<21))out.push('At least one recent cycle was shorter than 21 days.');
+  }
+  if(a.lens.some(l=>l>8))out.push('A recorded bleed lasted longer than 8 days.');
+  if(!out.length)return '';
+  return `<div class="eb">WORTH MENTIONING</div>${out.map(o=>`<div class="card"><div class="tx">${o}</div></div>`).join('')}`;
+}
+function heatmap(a){
+  const buckets=[[1,5],[6,10],[11,15],[16,20],[21,25],[26,99]];
+  const bph=buckets.map(b=>phaseOf(Math.min(b[0]+2,a.cycle),a.bounds));
+  const tally={},total={};let n=0;
+  Object.entries(S.logs).forEach(([d,l])=>{
+    if(!l.symptoms||!l.symptoms.length)return;
+    const p=phaseOn(d,a);if(!p)return;n++;
+    const bi=buckets.findIndex(b=>p.day>=b[0]&&p.day<=b[1]);if(bi<0)return;
+    l.symptoms.forEach(s=>{tally[s]=tally[s]||[0,0,0,0,0,0];tally[s][bi]++;total[s]=(total[s]||0)+1});
+  });
+  const rows=Object.entries(total).sort((x,y)=>y[1]-x[1]).slice(0,6).map(([s])=>s);
+  if(!rows.length)return `<div class="eb">WHERE SYMPTOMS LAND</div><div class="card"><div class="tx">Nothing to map yet. Tick the physical symptoms on a few days and this grid fills in.</div></div>`;
+  const mx=Math.max(...rows.map(s=>Math.max(...tally[s])));
+  return `<div class="eb">WHERE SYMPTOMS LAND</div>
+  <div class="card"><div class="heat" style="grid-template-columns:80px repeat(6,1fr)">
+   <div></div>${buckets.map(b=>`<div style="font-family:var(--m);font-size:9px;color:var(--ink4);text-align:center">${b[0]}${b[1]===99?'+':'–'+b[1]}</div>`).join('')}
+   ${rows.map(s=>`<div style="font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s)}</div>`+tally[s].map((v,i)=>`<div class="hc" style="background:var(--${bph[i]});opacity:${v===0?.07:(.2+.75*v/mx).toFixed(2)}"></div>`).join('')).join('')}
+  </div><div class="hint">Based on ${n} logged days.</div></div>`;
+}
+
+/* ---------------- data ---------------- */
+function data(a){
+  const P=[...S.periods].sort((x,y)=>x.start<y.start?1:-1);
+  return `<div class="mast"><h1>Your data</h1></div>
+  <div class="eb">SUMMARY</div>
+  <div class="row"><button class="btn" onclick="report()">Make a summary</button></div>
+  <div class="eb">PERIOD HISTORY</div>
+  <div class="card">${P.length?P.map(p=>{
+    const i=a.starts.indexOf(p.start),g=i>0?dayDiff(a.starts[i-1],p.start):null,len=p.end?dayDiff(p.start,p.end)+1:null;
+    return `<div class="hrow"><div><div class="d">${pretty(p.start)}${p.end?' – '+pretty(p.end):''}</div><div class="g">${len?len+' day bleed':'ongoing'}${g?' · '+g+' day cycle':''}${p.exclude?' · excluded':''}</div></div>
+    <div class="acts"><button class="${p.exclude?'on':''}" onclick="togEx('${p.id}')">${p.exclude?'excluded':'exclude'}</button><button onclick="delP('${p.id}')">delete</button></div></div>`}).join('')
+    :'<div class="hint" style="margin:0">Nothing logged yet.</div>'}</div>
+  <div class="eb">BACKUP</div>
+  <div class="card"><div class="row"><button class="btn gh" onclick="exp()">Export backup</button><button class="btn gh" onclick="document.getElementById('imp').click()">Import</button></div>
+  <input type="file" id="imp" accept=".json" style="display:none" onchange="impf(event)">
+  <div class="row" style="margin-top:8px"><button class="btn gh" onclick="reset()">Erase everything</button></div>
+  ${mem?'<div class="hint">Storage is unavailable here, so this session will not persist. Export before closing.</div>':''}</div>
+  <div class="hint" style="text-align:center;margin-top:28px;line-height:1.75">Predictions are averages of your own history, not a medical assessment,<br>and are not reliable for avoiding or achieving pregnancy.<br><br>Guidance follows DSM-5 and ACOG positions and recent reviews.<br>Where the evidence is weak, the app says so rather than guessing.</div>`;
+}
+
+/* ---------------- log sheet ---------------- */
+function openSheet(d){sheetDate=d;drawSheet();document.getElementById('sheet').classList.add('on')}
+function closeSheet(){document.getElementById('sheet').classList.remove('on');render()}
+function drawSheet(){
+  const a=A(),l=S.logs[sheetDate]||{},d=sheetDate,p=phaseOn(d,a);
+  const openP=S.periods.find(x=>!x.end&&x.start<=d), isStart=S.periods.some(x=>x.start===d);
+  document.getElementById('pn').innerHTML=`<div class="grab"></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline">
+   <div style="font-family:var(--d);font-size:21px">${parse(d).toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</div>
+   <button onclick="closeSheet()" style="font-size:19px;color:var(--ink3);padding:4px 8px">✕</button></div>
+  <div style="font-size:12.5px;color:var(--ink3);margin-top:3px">${p?`Day ${p.day} · ${CARE[p.phase].name.replace(' phase','')}`:'Before your first logged period'}</div>
+
+  <div class="fl">HOW YOU FELT — 1 IS NOT AT ALL, 5 IS EXTREME</div>
+  ${CORE.map(([k,lab])=>`<div class="sc"><span class="lb">${lab}</span><span class="bts">${[1,2,3,4,5].map(n=>`<button aria-pressed="${l.core&&l.core[k]===n}" onclick="setCore('${k}',${n})">${n}</button>`).join('')}</span></div>`).join('')}
+
+  <div class="fl">FLOW</div>
+  <div class="opts"><button aria-pressed="${!l.flow}" onclick="setF(null)">none</button>${FLOW.map(f=>`<button aria-pressed="${l.flow===f}" onclick="setF('${f}')">${f}</button>`).join('')}</div>
+  <div class="row" style="margin-top:10px">${isStart?`<button class="btn gh" onclick="delPByDate('${d}')">Remove period start</button>`:`<button class="btn gh" onclick="startP('${d}',1)">Mark as period start</button>`}
+  ${openP&&!isStart?`<button class="btn gh" onclick="endP('${d}',1)">Mark as last day</button>`:''}</div>
+
+  <div class="fl">ENERGY</div><div class="opts">${[1,2,3,4,5].map(n=>`<button aria-pressed="${l.energy===n}" onclick="setV('energy',${n})">${n}</button>`).join('')}</div>
+
+  <div class="fl">PHYSICAL SYMPTOMS</div>
+  <div class="chips">${SYM.map(s=>`<button class="chip" aria-pressed="${(l.symptoms||[]).includes(s)}" onclick="tog('${s}')">${s}</button>`).join('')}</div>
+
+  <div class="fl">NOTE</div>
+  <textarea id="nt" placeholder="What happened, and how it landed." oninput="setNote(this.value)">${esc(l.note||'')}</textarea>
+  <div class="row" style="margin-top:16px"><button class="btn solid" onclick="closeSheet()">Done</button></div>`;
+}
+const LG=()=>S.logs[sheetDate]=S.logs[sheetDate]||{};
+async function setCore(k,v){const l=LG();l.core=l.core||{};l.core[k]=l.core[k]===v?undefined:v;await save();drawSheet()}
+async function setF(f){const l=LG();l.flow=f||undefined;await save();drawSheet()}
+async function setV(k,v){const l=LG();l[k]=l[k]===v?undefined:v;await save();drawSheet()}
+async function tog(s){const l=LG();l.symptoms=l.symptoms||[];l.symptoms=l.symptoms.includes(s)?l.symptoms.filter(x=>x!==s):[...l.symptoms,s];await save();drawSheet()}
+async function setNote(v){LG().note=v;await save()}
+
+async function startP(d,fs){
+  if(S.periods.some(p=>p.start===d))return toast('Already logged');
+  const open=S.periods.filter(p=>!p.end&&p.start<d).sort((a,b)=>a.start<b.start?1:-1)[0];
+  if(open)open.end=shift(d,-1);
+  S.periods.push({id:uid(),start:d});await save();toast('Day one logged');fs?drawSheet():render();
+}
+async function endP(d,fs){
+  const open=S.periods.filter(p=>!p.end&&p.start<=d).sort((a,b)=>a.start<b.start?1:-1)[0];
+  if(!open)return toast('No open period');
+  open.end=d;await save();toast('Period ended');fs?drawSheet():render();
+}
+async function delPByDate(d){S.periods=S.periods.filter(p=>p.start!==d);await save();drawSheet()}
+async function delP(id){S.periods=S.periods.filter(p=>p.id!==id);await save();render();toast('Deleted')}
+async function togEx(id){const p=S.periods.find(x=>x.id===id);p.exclude=!p.exclude;await save();render()}
+
+function report(){
+  const a=A(),rows=pmPattern(a);
+  let t=`CYCLE SUMMARY — prepared ${parse(TODAY).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'})}\n\n`;
+  t+=`Cycles recorded: ${a.starts.length} (${pretty(a.starts[0])} to ${pretty(a.starts[a.starts.length-1])})\n`;
+  t+=`Median cycle length: ${a.cycle} days`+(a.gaps.length?` (range ${Math.min(...a.gaps)}–${Math.max(...a.gaps)})`:'')+`\n`;
+  t+=`Median bleed length: ${a.lens.length?a.period+' days':'not recorded'}`+(a.lens.length?` (range ${Math.min(...a.lens)}–${Math.max(...a.lens)})`:'')+`\n\n`;
+  t+=`PERIOD START DATES\n`;
+  a.starts.forEach((s,i)=>{const g=i>0?dayDiff(a.starts[i-1],s):null;
+    const p=S.periods.find(x=>x.start===s);
+    t+=`  ${s}${p&&p.end?' to '+p.end:''}${g?`   cycle ${g}d`:''}${p&&p.exclude?'   [excluded from averages]':''}\n`});
+  t+=`\nPREMENSTRUAL MOOD RATINGS (mean of 4 core DSM-5 items, 1–5)\n`;
+  if(!rows.length){t+=`  Not enough daily ratings yet. Needs at least 3 rated days in the 5 days before a period and 3 in days 4–10 after it.\n`}
+  else{rows.forEach(r=>{t+=`  Cycle from ${r.label}: post-menstrual ${r.post.toFixed(1)}, premenstrual ${r.pre.toFixed(1)}${r.pct!=null?`, ${r.pct>0?'+':''}${r.pct}%`:''}${r.meets?'   [>=30% increase]':''}\n`});
+    t+=`\n  ${rows.filter(r=>r.meets).length} of ${rows.length} cycles show a premenstrual increase of 30% or more.\n`}
+  t+=`\nNOTE\nDSM-5 requires prospective daily symptom ratings across at least two symptomatic cycles to confirm premenstrual dysphoric disorder. These ratings were recorded prospectively in a personal tracking app and are not a validated instrument or a diagnosis.\n`;
+  document.getElementById('pn').innerHTML=`<div class="grab"></div>
+   <div style="font-family:var(--d);font-size:21px;margin-bottom:4px">Summary for an appointment</div>
+   <div style="font-size:12.5px;color:var(--ink3);margin-bottom:14px">Copy this, or download it and print it.</div>
+   <pre class="rep">${esc(t)}</pre>
+   <div class="row" style="margin-top:14px"><button class="btn" onclick="copyRep()">Copy text</button><button class="btn" onclick="dl('cycle-summary.txt',REP,'text/plain')">Download</button></div>
+   <div class="row" style="margin-top:8px"><button class="btn gh" onclick="closeSheet()">Close</button></div>`;
+  window.REP=t;
+  document.getElementById('sheet').classList.add('on');
+}
+function copyRep(){navigator.clipboard?navigator.clipboard.writeText(window.REP).then(()=>toast('Copied'),()=>toast('Select and copy manually')):toast('Select and copy manually')}
+function dl(name,text,type){
+  try{const u=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),800);toast('Downloaded')}
+  catch(e){toast('Download blocked here')}
+}
+function exp(){dl('cycle-backup.json',JSON.stringify(S,null,2),'application/json')}
+function impf(e){
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=async()=>{try{const d=JSON.parse(r.result);if(!d.periods)throw 0;S=Object.assign(S,d);await save();render();toast('Imported')}catch(x){toast('Could not read that file')}};
+  r.readAsText(f);
+}
+async function reset(){if(!confirm('Erase all cycles and ratings? This cannot be undone.'))return;
+  S={periods:[],logs:{},settings:{cycle:30,period:6,luteal:13,win:6,onboarded:false,seeded:true}};await save();tab='today';render()}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2100)}
+
+/* ---------------- start ---------------- */
+const IMPORTED=[
+ ['2025-09-06','2025-09-11'],['2025-10-04','2025-10-09'],['2025-11-02','2025-11-08'],
+ ['2025-12-01','2025-12-05'],['2026-01-04','2026-01-10'],['2026-02-06','2026-02-10'],
+ ['2026-03-10','2026-03-14'],['2026-04-19','2026-04-24'],['2026-05-19','2026-05-24'],
+ ['2026-06-15','2026-06-20'],['2026-07-12','2026-07-20'],['2026-08-13','2026-08-18']];
+async function seedImported(){
+  S.periods=IMPORTED.map(([s,e])=>({id:uid(),start:s,end:e}));
+  S.settings.onboarded=true;S.settings.seeded=true;
+  await save();tab='today';render();
+}
+function onb(){
+  return `<div class="onb"><h2>Your cycle,<br>and how it <em>feels</em>.</h2>
+  <p>Log the day your last period started. Phases, predictions and patterns all come from that.</p>
+  <div class="card">
+   <div class="fl" style="margin-top:0">MY LAST PERIOD STARTED</div>
+   <input type="date" id="fd" max="${TODAY}" value="${shift(TODAY,-14)}">
+   <div class="fl">USUAL CYCLE LENGTH</div>
+   <select id="fl2">${Array.from({length:22},(_,i)=>i+21).map(n=>`<option value="${n}" ${n===30?'selected':''}>${n} days</option>`).join('')}</select>
+   <div class="row" style="margin-top:16px"><button class="btn solid" onclick="begin()">Start tracking</button></div>
+  </div>
+  <div class="row" style="margin-top:10px"><button class="btn gh" onclick="seedImported()">Reload my 12 imported cycles</button></div></div>`;
+}
+async function begin(){
+  S.periods=[{id:uid(),start:document.getElementById('fd').value||TODAY}];
+  S.settings.cycle=+document.getElementById('fl2').value;
+  S.settings.onboarded=true;S.settings.seeded=true;await save();render();
+}
+(async()=>{await load();
+  if(!S.settings.onboarded&&!S.settings.seeded){await seedImported();return}
+  render();})();
+</script>
