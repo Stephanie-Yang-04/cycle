@@ -20,7 +20,9 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;background:var(--bg)}
-body{font-family:var(--b);color:var(--ink);-webkit-font-smoothing:antialiased;overscroll-behavior-y:contain}
+body{font-family:var(--b);color:var(--ink);-webkit-font-smoothing:antialiased;overscroll-behavior-y:contain;touch-action:manipulation;-webkit-text-size-adjust:100%}
+html{scrollbar-width:none}
+::-webkit-scrollbar{width:0;height:0;display:none}
 button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
 input,textarea,select{font-family:inherit;font-size:16px}
 #root{max-width:480px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px 100px;min-height:100vh}
@@ -348,15 +350,15 @@ function drawDial(a){
   const prog=Math.max(0,fNow*C2-6);
   const [mx,my]=pt(fNow,R);
 
-  const labels=['menstrual','follicular','ovulatory','luteal'].map(k=>{
+  const labels=['follicular','ovulatory','luteal'].map(k=>{
     const d0=b[k][0], f=(d0-1)/L, [lx,ly]=pt(f,R+19);
     return `<text x="${lx.toFixed(1)}" y="${(ly+3.5).toFixed(1)}" text-anchor="middle" fill="var(--ink4)" font-size="9.5" font-family="var(--m)">${d0}</text>`}).join('');
 
   el.innerHTML=`<svg viewBox="0 0 224 224" role="img" aria-label="Cycle day ${a.day} of ${a.cycle}, ${a.phase} phase. The ring runs clockwise from day 1 at the top.">
     <circle r="${R}" cx="${cx}" cy="${cy}" fill="none" stroke="var(--s2)" stroke-width="13"/>
     ${arc('menstrual',b.menstrual)}${arc('follicular',b.follicular)}${arc('ovulatory',b.ovulatory)}${arc('luteal',b.luteal)}
-    <line x1="${cx}" y1="${cy-R-9}" x2="${cx}" y2="${cy-R+9}" stroke="var(--blush)" stroke-width="1.6"/>
-    <text x="${cx}" y="${cy-R-15}" text-anchor="middle" fill="var(--blush)" font-size="9.5" font-family="var(--m)" letter-spacing="1.5">DAY 1</text>
+    <line x1="${cx}" y1="${cy-R-6}" x2="${cx}" y2="${cy-R+6}" stroke="var(--blush)" stroke-width="1.6"/>
+    <text x="${cx}" y="${cy-R-13}" text-anchor="middle" fill="var(--blush)" font-size="9.5" font-family="var(--m)" letter-spacing="1.5">DAY 1</text>
     ${labels}
     <circle r="${r2}" cx="${cx}" cy="${cy}" fill="none" stroke="var(--blush)" stroke-width="2"
       stroke-dasharray="${prog.toFixed(1)} ${(C2-prog).toFixed(1)}" transform="rotate(-90 ${cx} ${cy})" opacity=".55" stroke-linecap="round"/>
@@ -476,6 +478,9 @@ function data(a){
     return `<div class="hrow"><div><div class="d">${pretty(p.start)}${p.end?' – '+pretty(p.end):''}</div><div class="g">${len?len+' day bleed':'ongoing'}${g?' · '+g+' day cycle':''}${p.exclude?' · excluded':''}</div></div>
     <div class="acts"><button class="${p.exclude?'on':''}" onclick="togEx('${p.id}')">${p.exclude?'excluded':'exclude'}</button><button onclick="delP('${p.id}')">delete</button></div></div>`}).join('')
     :'<div class="hint" style="margin:0">Nothing logged yet.</div>'}</div>
+  <div class="eb">APP</div>
+  <div class="card"><div class="row"><button class="btn" onclick="updateApp()">Check for update</button></div>
+  <div class="hint">Reloads the latest version. Your data is not affected.</div></div>
   <div class="eb">BACKUP</div>
   <div class="card"><div class="row"><button class="btn gh" onclick="exp()">Export backup</button><button class="btn gh" onclick="document.getElementById('imp').click()">Import</button></div>
   <input type="file" id="imp" accept=".json" style="display:none" onchange="impf(event)">
@@ -572,6 +577,10 @@ function impf(e){
 }
 async function reset(){if(!confirm('Erase all cycles and ratings? This cannot be undone.'))return;
   S={periods:[],logs:{},settings:{cycle:30,period:6,luteal:13,win:6,onboarded:false,seeded:true}};await save();tab='today';render()}
+function updateApp(){
+  const base=location.href.split('?')[0].split('#')[0];
+  location.replace(base+'?u='+Date.now());
+}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2100)}
 
 /* ---------------- start ---------------- */
