@@ -23,7 +23,7 @@ html,body{margin:0;padding:0;background:var(--bg)}
 body{font-family:var(--b);color:var(--ink);-webkit-font-smoothing:antialiased;overscroll-behavior-y:contain}
 button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
 input,textarea,select{font-family:inherit;font-size:16px}
-#root{max-width:480px;margin:0 auto;padding:18px 16px 100px;min-height:100vh}
+#root{max-width:480px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px 100px;min-height:100vh}
 
 .mast{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
 .mast h1{font-family:var(--d);font-weight:400;font-size:19px;margin:0;letter-spacing:-.01em}
@@ -327,6 +327,7 @@ function headsUp(a){
   else if(d>=b.luteal[0]&&d<=b.luteal[0]+2)m='<b>The luteal phase just started.</b> If a premenstrual pattern is going to show up, it starts building from around here.';
   else if(d>=b.ovulatory[0]&&d<=b.ovulatory[1])m=`<b>Fertile window, ${inPh('ovulatory')}.</b> Approximate — ovulation timing varies by several days even in regular cycles.`;
   else if(d===b.ovulatory[0]-1)m='<b>Estimated fertile window opens tomorrow.</b>';
+  else if(d>=b.luteal[0])m=`<b>Luteal phase, ${inPh('luteal')}.</b> Symptoms usually build gradually across this stretch and peak in the last few days.`;
   else if(d===b.menstrual[1])m='<b>Last expected day of bleeding.</b> The steadiest fortnight of your month starts here.';
   else if(d<=b.menstrual[1])m=`<b>${inPh('menstrual')} of bleeding.</b> Typically ${a.period} days for you.`;
   else m=`<b>Follicular phase, ${inPh('follicular')}.</b> Symptoms should be absent through here. Estimated ovulation around day ${a.ovDay}.`;
